@@ -9,12 +9,20 @@ class SoftDeletedRecord
 end
 
 module MongoMapper::SoftDeleted
+  class << self
+    def enabled?
+      instance_variable_defined?(:@enabled) ? @enabled : true
+    end
+
+    attr_writer :enabled
+  end
+
   def self.included(mod)
     mod.extend(MongoMapper::SoftDeleted::ClassMethods)
     mod.send(:include, MongoMapper::SoftDeleted::InstanceMethods)
 
     mod.after_destroy do
-      soft_delete_destroy(self)
+      soft_delete_destroy(self) if MongoMapper::SoftDeleted.enabled?
     end
   end
 

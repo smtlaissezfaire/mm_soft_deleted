@@ -13,6 +13,10 @@ class MongoMapperSoftDeleteDescendantFixtureModel < MongoMapperSoftDeleteFixture
 end
 
 describe MongoMapper::SoftDeleted do
+  before do
+    MongoMapper::SoftDeleted.enabled = true
+  end
+
   it "should be able to destroy the record" do
     obj = MongoMapperSoftDeleteFixtureModel.new
     obj.save!
@@ -110,5 +114,24 @@ describe MongoMapper::SoftDeleted do
     obj2.destroy
 
     MongoMapperSoftDeleteFixtureModel.soft_deleted.count.should == 2
+  end
+
+  it "should have soft_deleted on by default" do
+    MongoMapper::SoftDeleted.should be_enabled
+  end
+
+  it "should be able to set enabled = false" do
+    MongoMapper::SoftDeleted.enabled = false
+    MongoMapper::SoftDeleted.should_not be_enabled
+  end
+
+  it "should be able to globally turn it off" do
+    MongoMapper::SoftDeleted.enabled = false
+
+    obj1 = MongoMapperSoftDeleteFixtureModel.new
+    obj1.save!
+    obj1.destroy
+
+    MongoMapperSoftDeleteFixtureModel.soft_deleted.count.should == 0
   end
 end
