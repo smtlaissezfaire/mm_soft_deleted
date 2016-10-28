@@ -134,4 +134,14 @@ describe MongoMapper::SoftDeleted do
 
     MongoMapperSoftDeleteFixtureModel.soft_deleted.count.should == 0
   end
+
+  it "should not die if the object is deleted twice" do
+    obj1 = MongoMapperSoftDeleteFixtureModel.new
+    obj1.save!
+    obj1.destroy
+
+    lambda do
+      obj1.destroy
+    end.should_not raise_error
+  end
 end

@@ -22,7 +22,13 @@ module MongoMapper::SoftDeleted
     mod.send(:include, MongoMapper::SoftDeleted::InstanceMethods)
 
     mod.after_destroy do
-      soft_delete_destroy(self) if MongoMapper::SoftDeleted.enabled?
+      return true unless MongoMapper::SoftDeleted.enabled?
+      return true if @__soft_deleted_destroy_run
+
+      @__soft_deleted_destroy_run = true
+      soft_delete_destroy(self)
+
+      true
     end
   end
 
